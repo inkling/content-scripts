@@ -1,0 +1,9 @@
+# stuff 'relatively' in assets/css
+text-image.css
+custom.css
+image-sizing.css
+
+# stuff 'relatively' in assets/sass
+text-image.scss
+_text-image.scss
+_settings.scss

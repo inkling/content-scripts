@@ -66,7 +66,7 @@ echo ""
 
 # Clone git into content-scripts or environment specified instalation directory.
 installDir=${ICS_INSTALL_DIR:-content-scripts}
-git clone git@git.inkling.com:web/content-scripts $installDir
+git clone git@github.com:inkling/content-scripts.git $installDir
 
 if [[ $? == 0 ]]; then
   $installDir/bootstrap.sh

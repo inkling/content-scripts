@@ -65,8 +65,9 @@ echo "Downloading content-scripts."
 echo ""
 
 # Clone git into content-scripts or environment specified instalation directory.
+# Use read-only clone syntax so that you don't need a github.com account with configured ssh keys.
 installDir=${ICS_INSTALL_DIR:-content-scripts}
-git clone git@github.com:inkling/content-scripts.git $installDir
+git clone git://github.com/inkling/content-scripts.git $installDir
 
 if [[ $? == 0 ]]; then
   $installDir/bootstrap.sh

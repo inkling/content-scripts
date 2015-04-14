@@ -61,6 +61,12 @@ if [[ ! `command -v git` ]]; then
   exit 1
 fi
 
+if ! `python -c 'import bs4' 2>/dev/null` ; then
+  echo 'BeautifulSoup 4 is required to run module migration script.'
+  echo 'Please install BeautifulSoup 4 on your machine. See http://www.crummy.com/software/BeautifulSoup/ for instructions.'
+  exit 1
+fi
+
 echo "Downloading content-scripts."
 echo ""
 

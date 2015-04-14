@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 PROJECT_MODULE_DIR = 'assets/modules'
 TESTING_SUFFIX = '-testing'
 
-
+# Spec for module-only work such as listing, deleting, or synchronizing modules.
 MODULES_UPDATE_SPECS = [
     {
         'path': './' + PROJECT_MODULE_DIR,
@@ -41,6 +41,15 @@ MODULES_UPDATE_SPECS = [
     }
 ]
 
+# Spec for migrating from old widgets & patterns to modular ones.
+MODULE_MIGRATION_UPDATE_SPECS = MODULES_UPDATE_SPECS + [
+    {
+        'path': './',
+        'depth': 'infinity'
+    }
+]
+
+# Spec for syncing styles across projects.
 STYLES_UPDATE_SPECS = [
     {
         'path': './',

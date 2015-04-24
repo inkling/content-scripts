@@ -50,6 +50,12 @@ elif [[ `python -c 'import sys; print sys.version_info < (2, 7) and "1" or "0"'`
   exit 1
 fi
 
+if ! `python -c 'import bs4' 2>/dev/null` ; then
+  echo 'BeautifulSoup 4 is required to run module migration script.'
+  echo 'Please install BeautifulSoup 4 on your machine. See http://www.crummy.com/software/BeautifulSoup/ for instructions.'
+  exit 1
+fi
+
 # Setup PYTHONPATH
 # Prints the directory this script is located in and properly escapes spaces.
 dir=`printf "%q\n" "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"`

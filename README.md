@@ -12,6 +12,7 @@ that you have read and write access to.
     * Listing the modules in a project with `list_modules`
     * Deleting modules from a project with `delete_modules`
     * Copying modules between projects with `sync_modules`
+    * Migrating from non-modular to modular versions of widgets with `migrate`
 
 ## Getting Started
 
@@ -71,6 +72,7 @@ They should work on any Mac OSX or Linux machine with the following programs ins
 on the users path:
 
 * Python 2.7+
+    * Beautiful Soup 4 Python Library
 * rsync 2.6.9+
 * RubyGems 2.2.2+
 * Compass 1.0.3+
@@ -217,6 +219,56 @@ Each line of the CSV file specifies a list of modules to copy between two projec
 following format:
 
 `source project short name, source environment, destination project short name, destination environment, comma separated list of modules to copy`
+
+#### Migrating from widgets to modular widgets
+
+The `migrate` script helps with the final steps of cleaning up projects while migrating from widgets
+to modular versions of the same widget. For a project that has non-modular widgets the migration
+process is as follows:
+
+For each widget you want to migrate:
+
+1. Create a module containing a single widget and any patterns that reference that widget.
+2. Upload the created module to the module repository.
+3. Install the module into all projects that have the widget to be replaced.
+4. Run the `migrate` script to clean up all projects that have duplicate versions of widgets: the
+older widget and modular replacement.
+
+The script will update all the content (HTML files) and widget JSON config files changing all
+references from the non-modular widgets to instead reference the modular widgets. It then deletes
+the non-modular widget and all patterns that reference it.
+
+The script is available as:
+
+* `content-scripts/modules/migrate.py`
+* `content-scripts/bin/migrate.sh`
+
+##### Flags
+
+* `--config`, `-c`: Path to the CSV configuration file.
+* `--skip-commit`, `-s`: Whether to skip SVN commit. If used all specified migrations will still
+be performed but the changes won't be committed to SVN. That must be done manually.
+
+##### Examples
+
+```
+migrate.py -c migrate.csv
+migrate.py -c migrate.csv -s
+```
+
+##### CSV format
+
+Each line of the CSV file specifies a single widget/module pair to migrate in a single project with
+the following format:
+
+`project short name, project environment, widget directory name, module directory name`
+
+where the widget directory name is relative to `/assets/widgets` and the module
+directory name is relative to `/assets/modules`. The module directory name should always be of the
+form `orgslug.modulename`. For example, to migrate the project with shortname `sn_test_project`
+from the Inkling platform Flashcard widget to its modular counterpart the config line would be:
+
+`sn_test_project,stable,flashcard,inkling.flashcard`
 
 ## Contributing
 

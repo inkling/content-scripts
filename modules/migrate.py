@@ -224,8 +224,12 @@ def _updateConfigFile(filePath, widgetPath, modularWidgetPath):
 
     # Create a map of all Strings in the JSON that need migration. The key is
     # the non-modular relative path and the value is the modular relative path.
-    replacementMap = _getStringReplacementsInDict(data, widgetPath,
-        modularWidgetPath)
+    if isinstance(data, dict):
+        replacementMap = _getStringReplacementsInDict(data, widgetPath,
+                modularWidgetPath)
+    if isinstance(data, list):
+        replacementMap = _getStringReplacementsInList(data,
+                widgetPath, modularWidgetPath)
 
     # For each entry in the map, replace.
     for key, value in replacementMap.iteritems():

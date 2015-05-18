@@ -53,6 +53,7 @@ Example command lines:
 """
 
 import argparse
+import codecs
 import csv
 import glob
 import json
@@ -83,7 +84,7 @@ def _getSpecsFromCsv():
     configuration file.
     """
     results = []
-    with open(args.config, 'rb') as f:
+    with codecs.open(args.config, 'rb', encoding='utf8') as f:
         reader = csv.reader(f)
         try:
             for row in reader:
@@ -128,7 +129,7 @@ def _updateHTMLFile(filePath, widgetAbsolutePath, modularWidgetAbsolutePath):
         modularWidgetAbsolutePath - String absolute path to the modular widget.
     """
     log.debug('Reading HTML file: %s', filePath)
-    with open(filePath, 'rb') as htmlFile:
+    with codecs.open(filePath, 'rb', encoding='utf8') as htmlFile:
         htmlContent = ''.join(htmlFile.readlines())
 
     soup = BeautifulSoup(htmlContent)
@@ -170,6 +171,11 @@ def _updateHTMLFile(filePath, widgetAbsolutePath, modularWidgetAbsolutePath):
             # in the project and update it to be relative to the new modular
             # widget location.
             val = param.get('value')
+
+            # Don't replace empty string "" with path relative to widget.
+            if not val:
+                continue
+
             path = os.path.normpath(os.path.join(widgetAbsolutePath, val))
 
             # NOTE(andy): For this test to work we have to check out the
@@ -198,7 +204,7 @@ def _updateHTMLFile(filePath, widgetAbsolutePath, modularWidgetAbsolutePath):
 
     # Write out all the changes.
     log.info('Writing updated HTML file: %s', filePath)
-    with open(filePath, 'wb') as htmlFile:
+    with codecs.open(filePath, 'wb', encoding='utf8') as htmlFile:
         htmlFile.write(htmlContent)
 
 def _updateConfigFile(filePath, widgetPath, modularWidgetPath):
@@ -211,7 +217,7 @@ def _updateConfigFile(filePath, widgetPath, modularWidgetPath):
             modularWidthPath - String absolute path to the modular widget.
     """
     log.debug('Reading JSON config file: %s', filePath)
-    with open(filePath, 'rb') as configFile:
+    with codecs.open(filePath, 'rb', encoding='utf8') as configFile:
         jsonContent = ''.join(configFile.readlines())
 
     data = json.loads(jsonContent)
@@ -235,7 +241,7 @@ def _updateConfigFile(filePath, widgetPath, modularWidgetPath):
                                  jsonContent)
 
     log.info('Writing updated JSON config file: %s', filePath)
-    with open(filePath, 'wb') as configFile:
+    with codecs.open(filePath, 'wb', encoding='utf8') as configFile:
         configFile.write(jsonContent)
 
 def _getStringReplacementsInDict(data, widgetPath, modularWidgetPath):
@@ -315,7 +321,7 @@ def _deleteNonModularWidgetPatterns(repoPath, widgetDir):
         'pattern-snippets.html.tpls')
     if os.path.exists(patternFilePath):
         log.debug('Reading pattern snippet file: %s', patternFilePath)
-        with open(patternFilePath) as patternFile:
+        with codecs.open(patternFilePath, 'rb', encoding='utf8') as patternFile:
             patternContent = ''.join(patternFile.readlines())
 
         soup = BeautifulSoup(patternContent)
@@ -348,7 +354,7 @@ def _deleteNonModularWidgetPatterns(repoPath, widgetDir):
                     patternContent)
 
         log.info('Writing updated pattern snippets file: %s', patternFilePath)
-        with open(patternFilePath, 'wb') as patternFile:
+        with codecs.open(patternFilePath, 'wb', encoding='utf8') as patternFile:
             patternFile.write(patternContent)
     else:
         log.warning('No pattern file at "%s", not deleting patterns.',

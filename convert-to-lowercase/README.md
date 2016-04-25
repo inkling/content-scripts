@@ -1,6 +1,6 @@
 # Convert Files and References to Lowercase
 
-This shell script converts all filenames in a folder (and subfolders) to lowercase. Additionally, any references to the file will be replaced.
+This shell script converts all filenames in a directory (and all subdirectories) to lowercase. Additionally, any file in the directory with references to the file will be updated to the lowercase filename.
 
 Based on example from:
 http://stackoverflow.com/questions/17180580/how-to-create-a-bash-script-that-will-lower-case-all-files-in-the-current-folder

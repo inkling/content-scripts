@@ -50,8 +50,9 @@ User credentials and authentication will need to be stored before the script can
 
 #### Install sync-modules script
 
-1. Click __Download Zip__ in the corner of this page. Feel free to clone/pull instead if you're familiar with Git/Github.
-2. Unzip and move the `/sync-modules` folder to a location on your computer. When running the script, copies of the modules in each project will be placed in this folder, so make sure you have sufficient disk space.
+1. <a href="https://github.com/inkling/content-scripts/archive/bash-modules-sync.zip">Click here</a> to download the entire content-scripts repository as a ZIP file. Feel free to clone/pull instead if you're familiar with Git/Github.
+2. Unzip and move the `bash/sync-modules` folder to a location on your computer (This is the only folder you need from the repository). When running the script, copies of the modules in each project will be placed in this folder, so make sure you have sufficient disk space.
+
     Example: `/Documents/Inkling/Tools/sync-modules`
 
 ---
@@ -60,20 +61,10 @@ User credentials and authentication will need to be stored before the script can
 #### Prepare the list of projects
 The script uses a CSV (comma-separated values) file to determine the source project and list of target projects in the following format:
 
-<div style="width:50%; float: right">
-<ul style="list-style-type:none; padding-left: 0;">
-    <li><small><b>Row 1</b></small> Column Labels, do not delete!</li>
-    <li><small><b>Row 2</b></small> Source Project</li>
-    <li><small><b>Row 3</b></small> Target Project</li>
-    <li><small><b>Row 4+</b></small> Additional Target Projects</li>
-</ul>
-</div>
-
-<div style="width:50%">
 <table>
     <tr>
-        <td>Shortname <small style="color:#ff0066">(required)</small></td>
-        <td>Title <small style="color:#999">(optional)</small></td>
+        <td>Shortname <small>(required)</small></td>
+        <td>Title <small>(optional)</small></td>
     </tr>
     <tr>
         <td>sn_source</td>
@@ -88,8 +79,12 @@ The script uses a CSV (comma-separated values) file to determine the source proj
         <td>Target2 Title</td>
     </tr>
 </table>
-</div>
-
+<ul>
+    <li><small><b>Row 1</b></small> Column Labels, do not delete!</li>
+    <li><small><b>Row 2</b></small> Source Project</li>
+    <li><small><b>Row 3</b></small> Target Project</li>
+    <li><small><b>Row 4+</b></small> Additional Target Projects</li>
+</ul>
 
 
 In CSV format, the same data looks like this:
@@ -105,34 +100,19 @@ For ogranization, we recommend keeping the data in a spreadsheet and exporting a
 ###### Ensuring quality of the CSV file
 It's good practice to ensure the CSV is formatted correctly before using with the script. Some spreadsheet applications will add additional rows or columns that can cause issues. Below are two examples of improperly formatted CSV files.
 
-<style>
-.table--no-style td,
-.table--no-style tr,
-.table--no-style tr:nth-child(2n) {
-    border: 0px none !important;
-    background: transparent !important;
-    vertical-align: top;
-}
-
-.table--no-style td {
-    line-height: 1.1;
-}
-</style>
-<table class="table--no-style">
+<table>
     <tr>
-        <td><small style="color: #ff0066;">This file has the wrong number of "columns." Delete any excess data in columns C+</small></td>
-        <td><small style="color: #ff0066;">This file has the wrong number of "columns." Delete any excess data in the empty rows</small></td>
+        <td><small>Delete any excess data in columns C+</small></td>
+        <td><small>Delete any excess data in the empty rows</small></td>
     </tr>
     <tr>
-        <td>
-            <pre>Shortname,Title,,,,,
+        <td><pre>Shortname,Title,,,,,
 sn_source,Source Title,,,,,
 sn_target1,Target1 Title,,,,,
 sn_target2,Target2 Title,,,,,</pre>
 
         </td>
-        <td style="line-height:1">
-            <pre>Shortname,Title
+        <td><pre>Shortname,Title
 sn_source,Source Title
 sn_target1,Target1 Title
 sn_target2,Target2 Title
@@ -183,7 +163,7 @@ The `-d` flag will run the script in __delete mode__. This means that any additi
 <table>
     <tr>
         <td><code>bash sync-modules.sh</code></td>
-        <td><code>bash sync-modules.sh <span style="color:#ff0066">-d</span></code></td>
+        <td><code>bash sync-modules.sh <span>-d</span></code></td>
     </tr>
     <tr>
         <td>

@@ -18,28 +18,23 @@ c_target=$(tput setaf 5)
 c_source=$(tput setaf 6)
 c_dim=$(tput dim)
 
-# Get the name of the script to rexecute if JSON can't be found
+# Get the name of the script to rexecute if CSV can't be found
 script_name=$(basename -- "$0")
 
 # Input CSV containing source and target projects and environments.
-INPUT=project-list.json
+INPUT=project-list.csv
 
 directory=/trunk/assets/modules/
 
 rsync_delete=FALSE
 
-simulate_run=FALSE
-
-fail_log_file=failed-projects.json
+fail_log_file=failed-projects.csv
 
 # Option Flags
-while getopts ":f:ds" opt; do
+while getopts ":f:d" opt; do
   case $opt in
     d)
         rsync_delete=TRUE >&2
-      ;;
-    s)
-        simulate_run=TRUE >&2
       ;;
     f)
       INPUT=$OPTARG
@@ -60,17 +55,17 @@ done
 #-------------------------------------------------------------------
 echo -e $c_success"
 ------------------------------
-Modules JSON Sync 1.0.0
+Modules Sync 1.0.0
 ------------------------------
 "
 
 #-------------------------------------------------------------------
-# Check if the JSON file extist
+# Check if the CSV file extist
 #-------------------------------------------------------------------
 
 if [ ! -f "$INPUT" ];
   then
-    echo $c_error"No JSON file found. Make sure $c_info$INPUT$c_error is in
+    echo $c_error"No CSV file found. Make sure $c_info$INPUT$c_error is in
 the same folder as this script.
 "
 
@@ -86,23 +81,21 @@ the same folder as this script.
 fi
 
 #-------------------------------------------------------------------
-# BEGIN Reading JSON File to load the pre-flight overview
+# BEGIN Reading CSV File to load the pre-flight overview
 #-------------------------------------------------------------------
 
+# Store the original internal field separator.
+OLDIFS=$IFS
+
+# Set the internal field separator to match the CSV, "," in this case.
+IFS=","
+
 # Display the overview message
-if [ "$simulate_run" == "FALSE" ];then
-    echo -e $c_info"--- Warning ---
+echo -e $c_info"--- Warning ---
 This script will overwrite the modules in the Target projects \
 with the modules from the Source project. The list of projects \
 and setting can be changed in $c_reset$INPUT$c_info.$c_source
 "$c_reset
-else
-    echo -e $c_comment"--- DRY RUN ACTIVE ---
-This script will SIMULATE overwriting the modules in the Target projects \
-with the modules from the Source project. The list of projects \
-and setting can be changed in $c_reset$INPUT$c_info.$c_source
-"$c_reset
-fi
 
 # Display Delete Mode Warning
 if [ "$rsync_delete" = "TRUE" ]; then
@@ -118,56 +111,37 @@ total_target_count=0;
 # Store CSV line number
 csv_line=0;
 
-# Index of the project (to determine source from targets)
-project_index=0;
-
-# Regex for the line
-regex='"id":[^"]*"([^"]*)",[^"]*"title":[^"]*"([^"]*)",[^"]*"group":[^"]*"([^"]*)"'
-
 # Read the CSV file and loop through each line with the following variables.
-[ ! -f $INPUT ] &while IFS='' read -r line || [[ -n "$line" ]]; do
+[ ! -f $INPUT ] &while read col_a col_b
+do
 
-# If a project if is found, store the shortname and title
-if [[ $line =~ $regex ]]
-then
-    # Increment the total sync count
-    let "project_index++"
-
-    project_shortname="${BASH_REMATCH[1]}"
-    project_title="${BASH_REMATCH[2]}"
-    project_group="${BASH_REMATCH[3]}"
-
-# Skip the line if no project is found
-else
-    echo -e $c_info"---"$c_reset
-    continue
-fi
-
+project_shortname="$col_a"
+project_title="$col_b"
 
 # Increment the CSV line number (for indexing)
 let "csv_line++"
 
-if [ $project_index = 1 ]
+if [ $csv_line = 2 ]
     then
         # Display the source project and title
         echo -e $c_reset"Source Project:
-$c_comment[S]$c_source $project_shortname\t| $project_title $c_info($project_group)$c_reset
+$c_comment[S]$c_source $project_shortname | $project_title
 "
 fi
 
-if [ $project_index = 2 ]
+if [ $csv_line = 3 ]
     then
 
         # Display the target(s) title
         echo -e $c_reset"Target Project(s):"
 fi
 
-if [ $project_index -ge 2 ]
+if [ $csv_line -ge 3 ]
     then
     # Increment the total sync count
     let "total_target_count++"
 
-    echo -e "$c_comment[$total_target_count] $c_target$project_shortname\t| $project_title $c_info($project_group)$c_reset"
+    echo -e "$c_comment[$total_target_count] $c_target $project_shortname | $project_title$c_reset"
 
 fi
 
@@ -176,6 +150,9 @@ fi
 #-------------------------------------------------------------------
 # The input is submitted to the CSV using "<"
 done < $INPUT
+
+# Reset the internal field separator
+IFS=$OLDIFS
 
 #-------------------------------------------------------------------
 # Prompt user to continue if settings are correct.
@@ -210,30 +187,27 @@ echo  -e $c_success"\n\
 Beginning module sync!"$c_reset
 
 
+
+# Store the original internal field separator.
+OLDIFS=$IFS
+
+# Set the internal field separator to match the CSV, "," in this case.
+IFS=","
+
 # Reset CSV line number counter for second loop
 csv_line=0;
 
-# Index of the project (to determine source from targets)
-project_index=0;
-
 # Read the CSV file and loop through each line with the following variables.
-[ ! -f $INPUT ] &while IFS='' read -r line || [[ -n "$line" ]]; do
+[ ! -f $INPUT ] &while read col_a col_b
+do
 
 # Increment the CSV line number (for indexing)
 let "csv_line++"
 
-# If a project if is found, store the shortname and title
-if [[ $line =~ $regex ]]
-then
-    # Increment the total sync count
-    let "project_index++"
-
-    project_shortname="${BASH_REMATCH[1]}"
-    project_title="${BASH_REMATCH[2]}"
-    project_group="${BASH_REMATCH[3]}"
-
-# Skip the line if no project is found
-else
+# -------------------------------------------------------------------
+# Skip the settings and column label lines
+# -------------------------------------------------------------------
+if [ $csv_line -le 1 ]; then
     continue
 fi
 
@@ -241,11 +215,11 @@ fi
 # If source line, CHECKOUT SOURCE
 # -------------------------------------------------------------------
 
-if [ $project_index = 1 ]; then
+if [ $csv_line = 2 ]; then
 
 # Set semantic vars for columns for source
-source_shortname=$project_shortname
-source_title=$project_title
+source_shortname=$col_a
+source_title=$col_b
 
 # Echo the current source project
 echo -e $c_source\
@@ -253,20 +227,16 @@ echo -e $c_source\
 --------------------------------------------------------------------\n\
 $c_reset[Source] $c_source$source_shortname | $source_title$c_reset"
 
-    if [ "$simulate_run" == "FALSE" ];then
-        # If the project doesn't exist already, check out a working copy
-        if [ ! -d projects/$source_shortname ]; then
-                echo -e $c_info"Checking out source project"$c_reset
-                svn checkout https://svn.inkling.com/svn/$source_shortname/trunk/assets/modules projects/$source_shortname
-        else
-            echo -e $c_info"Already checked out"$c_reset
-        fi
-
-        # Update the working copy for good measure
-        svn update projects/$source_shortname
+    # If the project doesn't exist already, check out a working copy
+    if [ ! -d projects/$source_shortname ]; then
+            echo -e $c_info"Checking out source project"$c_reset
+            svn checkout https://svn.inkling.com/svn/$source_shortname/trunk/assets/modules projects/$source_shortname
     else
-        echo -e "Simulating source checkout and update..."
+        echo -e $c_info"Already checked out"$c_reset
     fi
+
+    # Update the working copy for good measure
+    svn update projects/$source_shortname
 
     # Restart the loop so you don't rsync source with source!
     continue
@@ -282,8 +252,8 @@ fi
 let "current_target_count++"
 
 # Store semantic vars for the columns
-target_shortname=$project_shortname
-target_title=$project_title
+target_shortname=$col_a
+target_title=$col_b
 
 # Log the current sync count and add a separator
 echo -e $c_target\
@@ -291,20 +261,17 @@ echo -e $c_target\
 --------------------------------------------------------------------\n\
 $c_reset[$current_target_count/$total_target_count] $c_target$target_shortname | $target_title$c_reset"
 
-if [ "$simulate_run" == "FALSE" ];then
-    # If the project doesn't exist already, check out a working copy
-    if [ ! -d projects/$target_shortname ]; then
-            echo -e $c_info"Checking out target project"$c_reset
-            svn checkout https://svn.inkling.com/svn/$target_shortname/trunk/assets/modules projects/$target_shortname
-    else
-        echo -e $c_info"Already checked out"$c_reset
-    fi
 
-    # Update the working copy for good measure
-    svn update projects/$target_shortname
+# If the project doesn't exist already, check out a working copy
+if [ ! -d projects/$target_shortname ]; then
+        echo -e $c_info"Checking out target project"$c_reset
+        svn checkout https://svn.inkling.com/svn/$target_shortname/trunk/assets/modules projects/$target_shortname
 else
-    echo -e "Simulating target checkout and update..."
+    echo -e $c_info"Already checked out"$c_reset
 fi
+
+# Update the working copy for good measure
+svn update projects/$target_shortname
 
 #-------------------------------------------------------------------
 # RUN the RSYNC
@@ -316,56 +283,43 @@ fi
 # Copy the source directory contents into the target directory
 echo -e $c_reset"\nOverwriting contents of $c_info$directory$c_reset in" $c_target"$target_shortname$c_reset with "$c_source"$source_shortname"$c_reset
 
-if [ "$simulate_run" == "FALSE" ];then
-    if [ $rsync_delete = "TRUE" ]
-    then
-       rsync --delete --recursive --cvs-exclude projects/$source_shortname/ projects/$target_shortname
-    else
-       rsync --recursive --cvs-exclude projects/$source_shortname/ projects/$target_shortname
-    fi
-else
-    echo -e "Simulating rsync with force delete..."
+ if [ $rsync_delete = "TRUE" ]
+ then
+    rsync --delete --recursive --cvs-exclude projects/$source_shortname/ projects/$target_shortname
+ else
+    rsync --recursive --cvs-exclude projects/$source_shortname/ projects/$target_shortname
 fi
+
 
 #-------------------------------------------------------------------
 # CLEAN local copy of TARGET for commiting
 #-------------------------------------------------------------------
-if [ "$simulate_run" == "FALSE" ];then
-    # Add any unversioned files (WARNING: this will add ignored files!)
-    printf $c_success
-    svn status projects/$target_shortname | grep ^\? | awk '{print $2}' | xargs svn add
-    printf $c_reset
 
-    # Delete any missing files
-    printf $c_error
-    svn status projects/$target_shortname | grep ^\! | awk '{print $2}' | xargs svn --force delete
-    printf $c_reset
-else
-    echo -e "Simulating cleaning local copy and adding files..."
-fi
+# Add any unversioned files (WARNING: this will add ignored files!)
+printf $c_success
+svn status projects/$target_shortname | grep ^\? | awk '{print $2}' | xargs svn add
+printf $c_reset
 
-fail_log_pre='[\n
-\t{ "id": "'$source_shortname'", "title": "'$source_title'", "group": "'$project_group'" },\n'
+# Delete any missing files
+printf $c_error
+svn status projects/$target_shortname | grep ^\! | awk '{print $2}' | xargs svn --force delete
+printf $c_reset
+
+fail_log_pre="Shortname,Project Title\n"$source_shortname,$source_title
 #-------------------------------------------------------------------
 # COMMIT new local changes in TARGET
 #-------------------------------------------------------------------
 echo -e $c_info"Commiting..."$c_reset
+svn commit -m "Inkling module sync script" projects/$target_shortname
 
-if [ "$simulate_run" == "FALSE" ];then
-    svn commit -m "" projects/$target_shortname
+if [ ! "$?" == "0" ]; then
+    echo -e $c_error"Error: "$c_reset$target_shortname$c_error" failed to commit. Added to $fail"
+    fail_log_pre+="\n"$target_shortname,$target_title
 
-    if [ ! "$?" == "0" ]; then
-        echo -e $c_error"Error: "$c_reset$target_shortname$c_error" failed to commit. Added to $fail_log_file"
-        fail_log_pre+='\t{ "id": "'$target_shortname'", "title": "'$target_title'", "group": "'$project_group'" },\n'
-
-        else
-            echo -e $c_success"Done: "$c_reset$target_shortname$c_success" commited successfuly"
-    fi
-    # $? is the status of the last command. 0 === success, anything else === failure.
-else
-    echo -e "Simulating target commit..."
+    else
+        echo -e $c_success"Done: "$c_reset$target_shortname$c_success" commited successfuly"
 fi
-
+# $? is the status of the last command. 0 === success, anything else === failure.
 
 if [ "$current_target_count" = "$total_target_count" ]; then
     echo -e $c_comment"No more projects in sync list"$c_reset
@@ -379,15 +333,11 @@ fi
 # The input is submitted to the CSV using "<"
 done < $INPUT
 
-fail_log_pre+="]"
+# Reset the internal field separator
+IFS=$OLDIFS
 
-
-if [ "$simulate_run" == "FALSE" ];then
-    # Log Errors to file
-    echo -e $fail_log_pre > $fail_log_file
-else
-    echo -e "Simulating writing to log file..."
-fi
+# Log Errors to file
+echo -e $fail_log_pre > $fail_log_file
 
 #-------------------------------------------------------------------
 # LOG completion time of ALL SYNCS

@@ -1,0 +1,4 @@
+[
+  { "id": "sn_source", "title": "Source Project Title", "group": "group_name" },
+  { "id": "sn_target", "title": "Target Project Title", "group": "group_name" },
+]

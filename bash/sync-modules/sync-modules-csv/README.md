@@ -59,7 +59,7 @@ User credentials and authentication will need to be stored before the script can
 ## Sync Modules
 
 #### Prepare the list of projects
-The script uses a JSON (javascript object notation) file to determine the source project and list of target projects in the following format:
+The script uses a CSV (comma-separated values) file to determine the source project and list of target projects in the following format:
 
 <table>
     <tr>

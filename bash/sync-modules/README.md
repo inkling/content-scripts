@@ -59,103 +59,54 @@ User credentials and authentication will need to be stored before the script can
 ## Sync Modules
 
 #### Prepare the list of projects
-The script uses a JSON (javascript object notation) file to determine the source project and list of target projects in the following format:
+The script uses a JSON (javascript object notation) file to determine the source project and list of target projects. This is NOT a true JSON parser so each project MUST be on a single line in the following format:
 
-<table>
-    <tr>
-        <td>Shortname <small>(required)</small></td>
-        <td>Title <small>(optional)</small></td>
-    </tr>
-    <tr>
-        <td>sn_source</td>
-        <td>Source Title</td>
-    </tr>
-    <tr>
-        <td>sn_target1</td>
-        <td>Target1 Title</td>
-    </tr>
-    <tr>
-        <td>sn_target2</td>
-        <td>Target2 Title</td>
-    </tr>
-</table>
+```
+[
+  { "id": "sn_source", "title": "Source Project", "group": "group_name" },
+  { "id": "sn_target1", "title": "Target Project One", "group": "group_name" },
+  { "id": "sn_target2", "title": "Target Project Two", "group": "group_name" },
+  { "id": "sn_target3", "title": "Target Project Three", "group": "group_name" },
+]
+```
+
+The first item is the source project. Any additional items are the target projects.
+
 <ul>
-    <li><small><b>Row 1</b></small> Column Labels, do not delete!</li>
-    <li><small><b>Row 2</b></small> Source Project</li>
-    <li><small><b>Row 3</b></small> Target Project</li>
-    <li><small><b>Row 4+</b></small> Additional Target Projects</li>
+    <li><small><b>id</b></small> The shortname of the project</li>
+    <li><small><b>title</b></small> The title of the project</li>
+    <li><small><b>group</b></small> An optional property (for your ogranization, not used by the script)</li>
 </ul>
-
-
-In CSV format, the same data looks like this:
-```
-Shortname,Title
-sn_source,Source Title
-sn_target1,Target1 Title
-sn_target2,Target2 Title
-```
-
-For ogranization, we recommend keeping the data in a spreadsheet and exporting as CSV when you're ready to run the script. You can make a copy of Inkling's <a href="https://docs.google.com/a/standardnine.com/spreadsheets/d/1lqET9VLV0oxILhzJC6zH1xq4CIfPojXO_fUxuhMJssA/edit?usp=sharing" target="_blank">Project Sync Google Sheet</a> as a good starting point.
-
-###### Ensuring quality of the CSV file
-It's good practice to ensure the CSV is formatted correctly before using with the script. Some spreadsheet applications will add additional rows or columns that can cause issues. Below are two examples of improperly formatted CSV files.
-
-<table>
-    <tr>
-        <td><small>Delete any excess data in columns C+</small></td>
-        <td><small>Delete any excess data in the empty rows</small></td>
-    </tr>
-    <tr>
-        <td><pre>Shortname,Title,,,,,
-sn_source,Source Title,,,,,
-sn_target1,Target1 Title,,,,,
-sn_target2,Target2 Title,,,,,</pre>
-
-        </td>
-        <td><pre>Shortname,Title
-sn_source,Source Title
-sn_target1,Target1 Title
-sn_target2,Target2 Title
-,
-,
-</pre>
-        </td>
-    </tr>
-</table>
 
 #### Run the script
 
-1. Export your project list as a CSV file
-    - Google Sheets: File -> Download As... -> Comma-separated values (.csv)
-    - Excel: File -> Save as... and set Format to Mac Comma Separated (.csv)
+1. Update the  `project-list.json` file and ensure it is in the `/sync-modules` folder.
 
-2. Rename the CSV to `project-list.csv` and place it in the `/sync-modules` folder.
+2. Open the Terminal and navigate to your `/sync-modules` folder. A quick shortcut is to drag the `/sync-modules` folder onto the Terminal icon in the dock.
 
-3. Open the Terminal and navigate to your `/sync-modules` folder. A quick shortcut is to drag the `/sync-modules` folder onto the Terminal icon in the dock.
+3. In the Terminal, run `bash sync-modules.sh`. This will start the script by reading the data from `project-list.json`.
 
-4. In the Terminal, run `bash sync-modules.sh`. This will start the script by reading the data from `project-list.csv`.
+4. Before the sycn begins, you'll be prompted to review the source and target projects. If you see any errors, exit the script (enter `n`) and make any changes to the project list.
 
-5. Before the sycn begins, you'll be prompted to review the source and target projects. If you see any errors, exit the script (enter `n`) and make any changes to the project list.
+5. If the review is correct, enter `y` to begin the sync. The script will being by downloading the modules from the source project. Then the script will download the first target project, copy (or overwrite) any modules from the source, and commit the changes back to Habitat.
 
-6. If the review is correct, enter `y` to begin the sync. The script will being by downloading the modules from the source project. Then the script will download the first target project, copyr (or overwrite) any modules from the source, and commit the changes back to Habitat.
-
-7. When complete, any projects that failed commit will be added to the fail-log.csv. Use this file to re-run the script on just the projects that failed to commit.
+6. When complete, any projects that failed commit will be added to the fail-log.csv. Use this file to re-run the script on just the projects that failed to commit.
 
 ##### Failed projects
 
-It's possible that a project can fail to commit due to a timeout of connectivity. Any projects that fail to commit are added to the `failed-projects.csv`. This file can then be used as the project list.
+It's possible that a project can fail to commit due to a timeout of connectivity. Any projects that fail to commit are added to the `failed-projects.json`. This file can then be used as the project list.
 
-Example: `bash sync-modules.sh -f failed-projects.csv`
+Example: `bash sync-modules.sh -f failed-projects.json`
 
 ### Options
 The script accepts several option flags for more flexibility.
 
 ### `-f FILENAME`
-The `-f` flag allows you to set a project list other than the default (`project-list.csv`). This is useful is you want to maintain several CSV files for different source/target lists or to re-run the script on any projects that failed commit due to a project timeout or connectivity issue.
+The `-f` flag allows you to set a project list other than the default (`project-list.json`). This is useful is you want to maintain several JSON files for different source/target lists or to re-run the script on any projects that failed commit due to a project timeout or connectivity issue.
 
-Example 1: `bash sync-modules.sh -f different-project-list.csv`
+Example 1: `bash sync-modules.sh -f different-project-list.json`
 
-Example 2: `bash sync-modules.sh -f failed-projects.csv`
+Example 2: `bash sync-modules.sh -f failed-projects.json`
 
 ### `-d`
 The `-d` flag will run the script in __delete mode__. This means that any additional modules in the target project that are not in source will be deleted.

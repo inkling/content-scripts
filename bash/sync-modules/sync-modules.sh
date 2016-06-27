@@ -352,7 +352,7 @@ fail_log_pre='[\n
 echo -e $c_info"Commiting..."$c_reset
 
 if [ "$simulate_run" == "FALSE" ];then
-    svn commit -m "" projects/$target_shortname
+    svn commit -m "Sync script commit" projects/$target_shortname
 
     if [ ! "$?" == "0" ]; then
         echo -e $c_error"Error: "$c_reset$target_shortname$c_error" failed to commit. Added to $fail_log_file"

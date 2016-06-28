@@ -209,12 +209,15 @@ current_target_count=0;
 echo  -e $c_success"\n\
 Beginning module sync!"$c_reset
 
-
 # Reset CSV line number counter for second loop
 csv_line=0;
 
 # Index of the project (to determine source from targets)
 project_index=0;
+
+# Setup fail log
+fail_log_pre='[\n
+\t{ "id": "'$source_shortname'", "title": "'$source_title'", "group": "'$project_group'" },\n'
 
 # Read the CSV file and loop through each line with the following variables.
 [ ! -f $INPUT ] &while IFS='' read -r line || [[ -n "$line" ]]; do
@@ -344,8 +347,6 @@ else
     echo -e "Simulating cleaning local copy and adding files..."
 fi
 
-fail_log_pre='[\n
-\t{ "id": "'$source_shortname'", "title": "'$source_title'", "group": "'$project_group'" },\n'
 #-------------------------------------------------------------------
 # COMMIT new local changes in TARGET
 #-------------------------------------------------------------------

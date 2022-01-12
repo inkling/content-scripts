@@ -14,15 +14,13 @@ DIR=`printf "%q\n" "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"`
 
 echo $DIR
 
-#installDir=${DIR:-remote-toolkit}'/remote-toolkit'
 installDir=${DIR:-remote-toolkit}'/inkling-rsync'
 echo "== INSTALL DIR"
 echo $installDir
 
 
 echo "== Cloning repo..."
-#git clone git://github.com/inkling/content-scripts.git $installDir
-git clone git@github.com:luis-balam/remote-toolkit.git $installDir
+git clone git://github.com/inkling/content-scripts.git $installDir
 echo "== Finish cloning repo."
 
 

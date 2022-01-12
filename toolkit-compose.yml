@@ -4,7 +4,7 @@ version: '3.8'
 services:
   toolkit:
     build: .
-    image: torus/remote-toolkit:local
+    image: shipyard.inkling.com/inkling-rsync:local
     working_dir: "/usr/bin/inkling-rsync"
     volumes:
       - "./sync:/usr/bin/inkling-rsync/sync"

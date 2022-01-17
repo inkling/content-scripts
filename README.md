@@ -16,9 +16,9 @@ that you have read and write access to.
 
 ## Getting Started
 
-Get started easily with a one line command to download and bootstrap the repo, or if you want to
+Get started easily with a one line command to download the repo, or if you want to
 see under the hood, you can follow setup instructions manually. These instructions will help you
-locally clone the content-scripts repository and get bootstrapped for running the scripts.
+locally clone the content-scripts repository for running the scripts.
 
 ### Automatic installation
 
@@ -26,44 +26,48 @@ In the directory you want to house the content-scripts repo run:
 
 `curl 'https://raw.githubusercontent.com/inkling/content-scripts/master/install.sh' | bash`
 
-If you want to change the installation directory you can do so by setting the ICS_INSTALL_DIR
-environment variable. You can do that just for this one command by doing:
-
-`ICS_INSTALL_DIR='<path to install location>' bash -c 'curl https://raw.githubusercontent.com/inkling/content-scripts/master/install.sh | bash'`
 
 The installation process starts by checking that you have installed all the prerequisites needed to
 run the content scripts. If you have not, the installation will fail with an error message before
 even cloning the repository. Install the necessary tool and repeat.
 
-The installation process will modify your `~/.profile` file to:
-* Add the `content-scripts` repo to your `PYTHONPATH`.
-* Add the `content-scripts/bin` directory to your `PATH`. This directory holds bash wrappers to the
-python scripts that will setup your `PYTHONPATH` for a run for easy use immediately.
 
-These changes to your profile will not take effect globally until you restart your machine. As the
-installation script should direct, you can have them take immediate effect in your terminal session
-by sourcing your profile:
-`source ~/.profile`
+### Manual installation on terminal
 
-### Manual installation
-
-1. Clone the content-scripts repository:
+1. Clone the content-scripts repository on desired path:
 `git clone git@github.com:inkling/content-scripts`
 
-2. Run `bootstrap.sh` located at the root of the content-scripts repo.
+2. Run `install.sh` located at the root of the content-scripts repo.
 This script will check that you have installed all necessary prerequisites and fail if you have not.
-Please install any tools as directory and re-run the bootstrap script until it completes without an
+Please install any tools as directory and re-run the install script until it completes without an
 error.
 
-3. The bootstrap script will modify your `~/.profile` file to:
-    * Add the `content-scripts` repo to your `PYTHONPATH`.
-    * Add the `content-scripts/bin` directory to your `PATH`. This directory holds bash wrappers to the
-python scripts that will setup your `PYTHONPATH` for a run for easy use immediately.
+3. In the directory of content-scripts repo run:
+    * `docker compose -f toolkit-compose.yml up -d`
+This step will download the tool image needed to spin the container up.
 
-These changes to your profile will not take effect globally until you restart your machine. As the
-installation script should direct, you can have them take immediate effect in your terminal session
-by sourcing your profile:
-`source ~/.profile`
+4. Run `docker exec -it content-scripts-toolkit-1 bash` in order to launch an interactive terminal
+    * This step will mount two shared folders between you host machine and the container 
+    `/sync`
+    `/svn`
+Any change made on those local machine folders will be reflected into the container tool path.
+
+
+## Docker commands 
+* `docker images -a` [will display the image repository if it has been downloaded on your machine]
+    `REPOSITORY                             TAG
+     shipyard.inkling.com/inkling-rsync     local`
+
+* `docker ps` this command displays if container tool is in use.
+`CONTAINER ID   IMAGE                                      COMMAND   NAMES
+1937s6db9a58   shipyard.inkling.com/inkling-rsync:local   "bash"    lucid_poitras`
+Take in consideration the name, if you have experience with docker it could be helpful
+
+* `docker compose -f toolkit-compose-yml up -d` command builds the local image the container will use
+
+* `docker exec -it content-scripts-toolkit-1 bash` interactive terminal to use the tool.
+
+
 
 ## Requirements
 
@@ -71,19 +75,15 @@ The content scripts are Python or Bash scripts that use the shell to complete mo
 They should work on any Mac OSX or Linux machine with the following programs installed and available
 on the users path:
 
-* Python 2.7+
-    * Beautiful Soup 4 Python Library
-* rsync 2.6.9+
-* RubyGems 2.2.2+
-* Compass 1.0.3+
+* Docker latest
+    
 
 ## Usage
 
-Each python script located in this repository is wrapped by a bash script located in
-`content-scripts/bin`. These bash scripts take identical arguments, but set up the PYTHONPATH for
-the run of the script, helping work around any path issues you might have, especially after first
-install. These bash wrappers are also added to your PATH so the scripts are available from any
-directory.
+Once you opened up the container in the interactive terminal:
+
+Each python script located in the container tool directory is wrapped by a bash script located in
+`content-scripts/bin`. These bash scripts take identical arguments, but the container sets up the PYTHONPATH for the run of the scripts. These bash wrappers are also added to the container PATH so the scripts are available from any directory inside the container.
 
 Each script is configured using a CSV file unique to that script.
 

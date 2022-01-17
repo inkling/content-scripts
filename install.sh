@@ -27,7 +27,7 @@ echo "== Finish cloning repo."
 if [[ $? == 0 ]]; then
   echo "== Docker compose..."
   echo "== Please run:"
-  echo "[ docker exec -it inkling-rsync-toolkit-1 bash ]"
+  echo "[ docker exec -it content-scripts-toolkit-1 bash ]"
   echo "== to execute the container and start your machine tool:"
   docker compose -f "$installDir/toolkit-compose.yml" up -d
 else

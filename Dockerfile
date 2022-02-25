@@ -6,6 +6,7 @@ RUN \
   apk update && apk upgrade && \
   apk --no-cache add git bash \
   ruby ruby-dev \
+  mod_dav_svn subversion \
   make gcc libc-dev \
   libffi-dev && \
   gem install --no-document compass && \

@@ -20,37 +20,44 @@ Get started easily with a one line command to download the repo, or if you want 
 see under the hood, you can follow setup instructions manually. These instructions will help you
 locally clone the content-scripts repository for running the scripts.
 
-### Automatic installation
+
+### Semi-automatic installation
 
 In the directory you want to house the content-scripts repo run:
 
 `curl 'https://raw.githubusercontent.com/inkling/content-scripts/master/install.sh' | bash`
 
-
 The installation process starts by checking that you have installed all the prerequisites needed to
 run the content scripts. If you have not, the installation will fail with an error message before
 even cloning the repository. Install the necessary tool and repeat.
 
+`This process will detach a container to use the tool but won't launch the bash terminal to start using it due docker limitations for interactive consoles that are thought for servers.`
 
-### Manual installation on terminal
+#### After confirming the container were detached you should launch the interactive console with the following:
+`docker exec -it inkling-rsync bash`
+
+
+
+### Manuall installation on terminal
 
 1. Clone the content-scripts repository on desired path:
 `git clone git@github.com:inkling/content-scripts`
 
-2. Run `install.sh` located at the root of the content-scripts repo.
-This script will check that you have installed all necessary prerequisites and fail if you have not.
-Please install any tools as directory and re-run the install script until it completes without an
-error.
+2. In the directory of content-scripts repo run:
+    * `docker-compose -f toolkit-compose.yml up -d`
+This step will download the tool image needed to spin the container up then it will be detached to use.
 
-3. In the directory of content-scripts repo run:
-    * `docker compose -f toolkit-compose.yml up -d`
-This step will download the tool image needed to spin the container up.
-
-4. Run `docker exec -it content-scripts-toolkit-1 bash` in order to launch an interactive terminal
+4. Run `docker exec -it inkling-rsync bash` in order to launch an interactive terminal
     * This step will mount two shared folders between you host machine and the container 
     `/sync`
     `/svn`
 Any change made on those local machine folders will be reflected into the container tool path.
+
+
+
+#### Multiple tool containers
+* In case you need run more that one tool bash you can uncomment the whole block on `toolkit-compose.yml` that points to the number 2 tool and replicate the block as many containers you need.
+
 
 
 ## Docker commands 
@@ -60,12 +67,18 @@ Any change made on those local machine folders will be reflected into the contai
 
 * `docker ps` this command displays if container tool is in use.
 `CONTAINER ID   IMAGE                                      COMMAND   NAMES
-1937s6db9a58   shipyard.inkling.com/inkling-rsync:local   "bash"    lucid_poitras`
+1937s6db9a58   shipyard.inkling.com/inkling-rsync:local   "bash"    inkling-rsync`
 Take in consideration the name, if you have experience with docker it could be helpful
 
-* `docker compose -f toolkit-compose-yml up -d` command builds the local image the container will use
+* `docker-compose -f toolkit-compose.yml up -d` command builds the local image the container will use
 
-* `docker exec -it content-scripts-toolkit-1 bash` interactive terminal to use the tool.
+* `docker exec -it inkling-rsync bash` interactive terminal to use the tool.
+  Once the image is detached (Detached mode -d: Run containers in the background) you need to execute the bash from the container.
+
+## Docker commands to clean up docker containers
+* `docker stop <CONTAINER ID>`
+* `docker rm <CONTAINER ID>`
+* `docker rmi <IMAGE ID>`
 
 
 

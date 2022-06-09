@@ -16,35 +16,25 @@ that you have read and write access to.
 
 ## Getting Started
 
-Get started easily with a one line command to download the repo, or if you want to
-see under the hood, you can follow setup instructions manually. These instructions will help you locally clone the content-scripts repository for running the scripts.
+Get started easily with cloning the repo, then settting your SVN credentials to launch the container. These instructions will help you locally clone the content-scripts repository for running the scripts.
 
 
 ### Installation
 
 `This process will spin up a detach container to use the tool but won't launch the bash terminal to start using it due docker limitations for interactive consoles that are thought for servers.`
 
-In the directory you want to house the content-scripts repo run:
-
-`curl 'https://raw.githubusercontent.com/inkling/content-scripts/master/install.sh' | bash`
-
-The installation process starts by checking that you have installed all the prerequisites needed to run the content scripts. If you have not, the installation will fail with an error message before even cloning the repository. Install the necessary tool and repeat.
-
-
-#### After confirming last step is done you should launch the interactive console reattaching the detached pod with the following command:
-`docker exec -it inkling-rsync bash`
-
-#### Then you are in container but you will need set your SVN credentials running the following command and after that you will be able to use the tool:
-`./set-credentials.sh`
-
-
-
-### Manuall installation on terminal
-
 1. Clone the content-scripts repository on desired path:
-`git clone git@github.com:inkling/content-scripts`
+`git clone git@github.com:inkling/content-scripts inkling-rsync`
 
-2. In the directory of content-scripts repo run:
+
+2. Once you have the repo cloned locally get into the created folder with `cd inkling-rsync` and update the file `svn-credentials.env` with your valid SVN credentials.
+
+`
+SVN_USERNAME=<replace_username@inkling.com>
+SVN_PASSWORD=<replace-password>
+`
+
+3. Then compose the container running:
     * `docker-compose -f toolkit-compose.yml up -d`
 This step will download the tool image needed to spin the container up then it will be detached to use.
 
@@ -54,10 +44,12 @@ This step will download the tool image needed to spin the container up then it w
     `/svn`
 Any change made on those local machine folders will be reflected into the container tool path.
 
+5. The last step is to set your credentials in order to use the tool.
+`./set-credentials.sh`
 
 
 #### Multiple tool containers
-* In case you need run more that one tool bash you can uncomment the whole block on `toolkit-compose.yml` that points to the number 2 tool and replicate the block as many containers you need.
+* In case you need run more that one tool bash you can uncomment the whole block on `toolkit-compose.yml` file that points to the number 2 tool, you can replicate the block as many containers you need.
 
 
 ## Docker commands 
@@ -70,7 +62,7 @@ Any change made on those local machine folders will be reflected into the contai
 1937s6db9a58   shipyard.inkling.com/inkling-rsync:local   "bash"    inkling-rsync`
 Take in consideration the name, if you have experience with docker it could be helpful
 
-* `docker-compose -f toolkit-compose.yml up -d` command builds the local image the container will use
+* `docker-compose -f toolkit-compose.yml up -d` command builds the local image and spin up the container on detached mode.
 
 * `docker exec -it inkling-rsync bash` interactive terminal to use the tool.
   Once the image is detached (Detached mode -d: Run containers in the background) you need to execute the bash from the container.

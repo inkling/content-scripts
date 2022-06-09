@@ -17,23 +17,21 @@ that you have read and write access to.
 ## Getting Started
 
 Get started easily with a one line command to download the repo, or if you want to
-see under the hood, you can follow setup instructions manually. These instructions will help you
-locally clone the content-scripts repository for running the scripts.
+see under the hood, you can follow setup instructions manually. These instructions will help you locally clone the content-scripts repository for running the scripts.
 
 
-### Semi-automatic installation
+### Installation
+
+`This process will detach a container to use the tool but won't launch the bash terminal to start using it due docker limitations for interactive consoles that are thought for servers.`
 
 In the directory you want to house the content-scripts repo run:
 
 `curl 'https://raw.githubusercontent.com/inkling/content-scripts/master/install.sh' | bash`
 
-The installation process starts by checking that you have installed all the prerequisites needed to
-run the content scripts. If you have not, the installation will fail with an error message before
-even cloning the repository. Install the necessary tool and repeat.
+The installation process starts by checking that you have installed all the prerequisites needed to run the content scripts. If you have not, the installation will fail with an error message before even cloning the repository. Install the necessary tool and repeat.
 
-`This process will detach a container to use the tool but won't launch the bash terminal to start using it due docker limitations for interactive consoles that are thought for servers.`
 
-#### After confirming the container were detached you should launch the interactive console with the following:
+#### After confirming last step is done you should launch the interactive console reattaching the detached pod with the following command:
 `docker exec -it inkling-rsync bash`
 
 

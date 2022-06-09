@@ -22,7 +22,7 @@ see under the hood, you can follow setup instructions manually. These instructio
 
 ### Installation
 
-`This process will detach a container to use the tool but won't launch the bash terminal to start using it due docker limitations for interactive consoles that are thought for servers.`
+`This process will spin up a detach container to use the tool but won't launch the bash terminal to start using it due docker limitations for interactive consoles that are thought for servers.`
 
 In the directory you want to house the content-scripts repo run:
 
@@ -33,6 +33,9 @@ The installation process starts by checking that you have installed all the prer
 
 #### After confirming last step is done you should launch the interactive console reattaching the detached pod with the following command:
 `docker exec -it inkling-rsync bash`
+
+#### Then you are in container but you will need set your SVN credentials running the following command and after that you will be able to use the tool:
+`./set-credentials.sh`
 
 
 
@@ -57,7 +60,6 @@ Any change made on those local machine folders will be reflected into the contai
 * In case you need run more that one tool bash you can uncomment the whole block on `toolkit-compose.yml` that points to the number 2 tool and replicate the block as many containers you need.
 
 
-
 ## Docker commands 
 * `docker images -a` [will display the image repository if it has been downloaded on your machine]
     `REPOSITORY                             TAG
@@ -74,9 +76,9 @@ Take in consideration the name, if you have experience with docker it could be h
   Once the image is detached (Detached mode -d: Run containers in the background) you need to execute the bash from the container.
 
 ## Docker commands to clean up docker containers
-* `docker stop <CONTAINER ID>`
-* `docker rm <CONTAINER ID>`
-* `docker rmi <IMAGE ID>`
+* `docker stop inkling-rsync # Stops the container `
+* `docker rm inkling-rsync # Removes the container `
+* `docker rmi shipyard.inkling.com/inkling-rsync:local # Removes the image`
 
 
 

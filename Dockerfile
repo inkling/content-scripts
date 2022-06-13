@@ -1,7 +1,7 @@
 FROM python:2
 
 RUN apt-get -y update && \
-  apt-get install -y ruby-full gcc && \
+  apt-get install -y ruby-full gcc rsync && \
   gem install --no-document compass && \
   pip install --no-cache-dir beautifulsoup4 && \
   apt-get clean

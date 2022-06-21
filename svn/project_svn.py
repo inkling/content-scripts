@@ -85,9 +85,9 @@ def cleanRepo(path):
     log.info('Cleaning up svn status for %s', path)
     try:
         subprocess.check_call([r"svn status " + path + r" | egrep '^\?' |"
-            " awk '{print $2}' | xargs svn add"], shell=True)
+            " awk '{print $2}' | xargs --no-run-if-empty svn add"], shell=True)
         subprocess.check_call([r"svn status " + path + r" | egrep '^\!' |"
-            " awk '{print $2}' | xargs svn --force delete"], shell=True)
+            " awk '{print $2}' | xargs --no-run-if-empty svn --force delete"], shell=True)
     except subprocess.CalledProcessError as e:
         raise SvnError('Unable to clean up SVN state', cause=e)
 

@@ -65,6 +65,66 @@ STYLES_UPDATE_SPECS = [
     }
 ]
 
+# Spec for syncing styles and patterns across projects.
+STYLES_PATTERNS_UPDATE_SPECS = [
+    {
+        'path': './',
+        'depth': 'immediates'
+    },
+    {
+        'path': './assets/sass',
+        'depth': 'infinity',
+    },
+    {
+        'path': './assets/css',
+        'depth': 'infinity'
+    },
+    {
+        'path': './s9ml',
+        'depth': 'infinity',
+    },
+    {
+        'path': './s9ml/.templates',
+        'depth': 'infinity',
+    }
+]
+
+# Spec for syncing styles across projects without fonts or images in the css directory.
+STYLES_SIMPLER_CSS_UPDATE_SPECS = [
+    {
+        'path': './',
+        'depth': 'immediates'
+    },
+    {
+        'path': './assets/sass',
+        'depth': 'infinity',
+    },
+    {
+        'path': './assets/css',
+        'depth': 'immediates'
+    }
+]
+
+# Spec for syncing styles and patterns across projects without fonts or images in the css directory.
+STYLES_PATTERNS_SIMPLER_CSS_UPDATE_SPECS = [
+    {
+        'path': './',
+        'depth': 'immediates'
+    },
+    {
+        'path': './assets/sass',
+        'depth': 'infinity',
+    },
+    {
+        'path': './assets/css',
+        'depth': 'immediates'
+    },
+    {
+        'path': './s9ml/.templates',
+        'depth': 'infinity',
+    }
+]
+
 
 class SvnError(Exception):
     """Exception raised for errors executing SVN commands.

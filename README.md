@@ -35,7 +35,7 @@ SVN_PASSWORD=<replace-password>
 `
 
 3. Then compose the container running:
-    * `docker-compose -f toolkit-compose.yml up -d`
+    * `docker-compose up -d`
 This step will download the tool image needed to spin the container up then it will be detached to use.
 
 4. Run `docker exec -it inkling-rsync bash` in order to launch an interactive terminal
@@ -49,7 +49,7 @@ Any change made on those local machine folders will be reflected into the contai
 
 
 #### Multiple tool containers
-* In case you need run more that one tool bash you can uncomment the whole block on `toolkit-compose.yml` file that points to the number 2 tool, you can replicate the block as many containers you need.
+* In case you need run more that one tool bash you can uncomment the whole block on `docker-compose.yml` file that points to the number 2 tool, you can replicate the block as many containers you need.
 
 
 ## Docker commands 
@@ -62,7 +62,7 @@ Any change made on those local machine folders will be reflected into the contai
 1937s6db9a58   shipyard.inkling.com/inkling-rsync:local   "bash"    inkling-rsync`
 Take in consideration the name, if you have experience with docker it could be helpful
 
-* `docker-compose -f toolkit-compose.yml up -d` command builds the local image and spin up the container on detached mode.
+* `docker-compose up -d` command builds the local image and spin up the container on detached mode.
 
 * `docker exec -it inkling-rsync bash` interactive terminal to use the tool.
   Once the image is detached (Detached mode -d: Run containers in the background) you need to execute the bash from the container.

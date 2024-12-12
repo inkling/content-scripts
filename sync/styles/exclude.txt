@@ -1,9 +1,19 @@
 # stuff 'relatively' in assets/css
-text-image.css
 custom.css
-image-sizing.css
-
+inkforms.css
+​
 # stuff 'relatively' in assets/sass
-text-image.scss
-_text-image.scss
-_settings.scss
+custom.scss
+inkforms.scss
+​
+# stuff 'relatively' in s9ml
+config.s9ml
+glossary.s9ml
+remarks.s9ml
+toc.s9ml
+​
+# stuff 'relatively' in s9ml/.templates
+class-groups.text.tpl
+habitat-configuration.json
+html.html.tpl
+pattern-snippets.html.tpls

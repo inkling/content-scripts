@@ -50,9 +50,10 @@ import csv
 import logging
 import os
 import subprocess
-
 from s9logging import s9logging
 import svn.project_svn as svn
+import sys
+sys.path.insert(1, os.getcwd())
 
 parser = argparse.ArgumentParser(description='Sync styles between Inkling '
     'projects.')
@@ -65,6 +66,7 @@ parser.add_argument('-n', '--dry-run', action='store_true', default=False,
 
 s9logging.configureLogging()
 log = logging.getLogger(__name__)
+basePath = ''
 
 def _getSyncSpecsFromCsv():
     """Returns a list of tuples of the form (source name, source environment,
@@ -72,18 +74,19 @@ def _getSyncSpecsFromCsv():
     sync) taken from the CSV configuration file if one was specified.
     """
     results = []
-    with open(args.config, 'rb') as file:
+    configPath = basePath in args.config and args.config.strip() or os.path.join(basePath, args.config.strip())    
+    filePath = os.path.join(os.getcwd(), configPath)
+    with open(filePath, 'rt', encoding='utf-8') as file:
         reader = csv.reader(file)
         try:
             for row in reader:
-                # Strip any whitespace in row contents.
-                row = map(str.strip, row)
                 if len(row) < 6 or not(row[0] and row[1] and row[2] and row[3]
                         and row[5]):
                     log.warning('CSV has invalid number of arguments at line '
                                 '%s, skipping line.\n', reader.line_num)
                 else:
-                    results.append((row[0], row[1], row[2], row[3], row[4],
+                    # Strip any whitespace in row contents.
+                    results.append((row[0].strip(), row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(),
                         set(row[5:])))
         except csv.Error as e:
             logging.error('Unable to parse CSV at line %s, skipping rest of'
@@ -100,7 +103,8 @@ if __name__ == '__main__':
             pathsToSync in syncSpecs:
 
         # Validate exclude file.
-        if excludeFile and not os.path.isfile(excludeFile):
+        excludeFilePath = basePath in excludeFile and excludeFile or os.path.join(basePath, excludeFile)
+        if excludeFile and not os.path.isfile(excludeFilePath):
             logging.error('Exclude file "%s" does not exist. Skipping sync.\n',
                 excludeFile)
             continue
@@ -138,7 +142,7 @@ if __name__ == '__main__':
                             os.path.join(target['path'],path)])
 
             if args.dry_run:
-                print '"rsync" with %s' % command
+                print('"rsync" with %s' % command)
             else:
                 try:
                     log.info('Excuting rsync: %s', command)
@@ -152,7 +156,7 @@ if __name__ == '__main__':
         sassCommand = ['compass', 'compile', target['path']]
 
         if args.dry_run:
-            print '"Compile Sass" with %s' % sassCommand
+            print('"Compile Sass" with %s' % sassCommand)
         else:
             try:
                 log.info('Compiling Sass: %s', sassCommand)
@@ -164,8 +168,8 @@ if __name__ == '__main__':
 
         # Clean up svn status and commit.
         if args.dry_run:
-            print '"Clean" SVN status for %s' % target['path']
-            print '"SVN commit" for %s' % target['path']
+            print('"Clean" SVN status for %s' % target['path'])
+            print('"SVN commit" for %s' % target['path'])
         else:
             try:
                 svn.cleanRepo(target['path'])

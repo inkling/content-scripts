@@ -1,4 +1,4 @@
-FROM python:2
+FROM python
 
 RUN apt-get -y update && \
   apt-get install -y ruby-full gcc rsync && \
